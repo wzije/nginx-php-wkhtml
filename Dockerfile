@@ -20,24 +20,24 @@ COPY config/php.ini /etc/php7/conf.d/zzz_custom.ini
 # Configure supervisord
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Setup document nobody
+# Setup document www-data
 RUN mkdir -p /var/www/html
 
 RUN mkdir -p /run/nginx
 
-# Make sure files/folders needed by the processes are accessable when they run under the nobody user
-RUN chown -R nobody.nobody /run && \
-  chown -R nobody.nobody /var/lib/nginx && \
-  chown -R nobody.nobody /var/tmp/nginx && \
-  chown -R nobody.nobody /var/log && \
-  chown -R nobody.nobody /var/www/html
+# Make sure files/folders needed by the processes are accessable when they run under the www-data user
+RUN chown -R www-data.www-data /run && \
+  chown -R www-data.www-data /var/lib/nginx && \
+  chown -R www-data.www-data /var/tmp/nginx && \
+  chown -R www-data.www-data /var/log && \
+  chown -R www-data.www-data /var/www/html
 
 # Switch to use a non-root user from here on
 USER www-data
 
 # Add application
 WORKDIR /var/www/html
-COPY --chown=nobody ./ /var/www/html 
+COPY --chown=www-data ./ /var/www/html 
 
 #set home
 RUN HOME=/var/www/html
