@@ -7,7 +7,7 @@ RUN apk --no-cache add php7 php7-fpm php7-mysqli php7-json php7-openssl php7-cur
     php7-mcrypt php7-dom php7-simplexml php7-fileinfo php7-tokenizer php7-xmlwriter php7-session \
     php7-mbstring php7-iconv php7-zip php7-gd php7-pdo_mysql nginx supervisor curl nano \
     libgcc libstdc++ libx11 glib libxrender libxext libintl \
-    ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family gcompat wkhtmltopdf
+    ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family gcompat wkhtmltopdf fcgi
 
 # Configure nginx
 COPY config/nginx.conf /etc/nginx/nginx.conf
@@ -32,6 +32,13 @@ RUN chown -R nobody.www-data /run && \
   chown -R nobody.www-data /var/log && \
   chown -R nobody.www-data /var/www/html
 
+# Switch to use a non-root user from here on
+USER nobody
+
+# Add application
+WORKDIR /var/www/html
+COPY --chown=nobody ./ /var/www/html 
+
 #set home
 RUN HOME=/var/www/html
 
@@ -44,18 +51,9 @@ CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 # Configure a healthcheck to validate that everything is up&running
 #HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1/fpm-ping
 
-RUN apk add --no-cache fcgi
-
 HEALTHCHECK --interval=10s --timeout=3s \
     CMD \
     SCRIPT_NAME=/ping \
     SCRIPT_FILENAME=/ping \
     REQUEST_METHOD=GET \
     cgi-fcgi -bind -connect 127.0.0.1:9000 || exit 1
-
-# Switch to use a non-root user from here on
-USER nobody
-
-# Add application
-WORKDIR /var/www/html
-COPY --chown=nobody ./ /var/www/html 
