@@ -32,13 +32,6 @@ RUN chown -R nobody.www-data /run && \
   chown -R nobody.www-data /var/log && \
   chown -R nobody.www-data /var/www/html
 
-# Switch to use a non-root user from here on
-USER nobody
-
-# Add application
-WORKDIR /var/www/html
-COPY --chown=nobody ./ /var/www/html 
-
 #set home
 RUN HOME=/var/www/html
 
@@ -59,3 +52,10 @@ HEALTHCHECK --interval=10s --timeout=3s \
     SCRIPT_FILENAME=/ping \
     REQUEST_METHOD=GET \
     cgi-fcgi -bind -connect 127.0.0.1:9000 || exit 1
+
+# Switch to use a non-root user from here on
+USER nobody
+
+# Add application
+WORKDIR /var/www/html
+COPY --chown=nobody ./ /var/www/html 
