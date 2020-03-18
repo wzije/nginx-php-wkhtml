@@ -26,11 +26,11 @@ RUN mkdir -p /var/www/html
 RUN mkdir -p /run/nginx
 
 # Make sure files/folders needed by the processes are accessable when they run under the nobody user
-RUN chown -R nobody.www-data /run && \
-  chown -R nobody.www-data /var/lib/nginx && \
-  chown -R nobody.www-data /var/tmp/nginx && \
-  chown -R nobody.www-data /var/log && \
-  chown -R nobody.www-data /var/www/html
+RUN chown -R nobody.nobody /run && \
+  chown -R nobody.nobody /var/lib/nginx && \
+  chown -R nobody.nobody /var/tmp/nginx && \
+  chown -R nobody.nobody /var/log && \
+  chown -R nobody.nobody /var/www/html
 
 # Switch to use a non-root user from here on
 USER nobody
